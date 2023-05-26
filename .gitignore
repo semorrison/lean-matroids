@@ -3,3 +3,6 @@
 /leanpkg.path
 .DS_Store
 src/matroid/.DS_Store
+*.ast.json
+*.tlean
+src/all.lean
