@@ -1,8 +1,8 @@
 import mathlib.finsum_ncard
 import mathlib.data.set.image
 import mathlib.logic.equiv.basic
-import .basic
-import ..maps.equiv
+import matroid.constructions.basic
+import matroid.maps.equiv
 
 noncomputable theory
 
@@ -43,28 +43,28 @@ def direct_sum (M : ∀ i, matroid (E i)) : matroid (Σ i, E i) :=
     ext,
     simpa using hne},
   end,
-  maximality := 
+  maximality :=
   begin
-    rintros I X ⟨B₀, hB₀, hIB₀⟩ hIX, 
-    have h := λ i, (M i).maximality (sigma.mk i ⁻¹' I) (sigma.mk i ⁻¹' X) 
-      ⟨sigma.mk i ⁻¹' B₀, hB₀ i, preimage_mono hIB₀⟩ (preimage_mono hIX), 
-    
-    choose Js hJs using h, 
-    have h_ex_Bs := λ i, (hJs i).1.1, 
+    rintros I X ⟨B₀, hB₀, hIB₀⟩ hIX,
+    have h := λ i, (M i).maximality (sigma.mk i ⁻¹' I) (sigma.mk i ⁻¹' X)
+      ⟨sigma.mk i ⁻¹' B₀, hB₀ i, preimage_mono hIB₀⟩ (preimage_mono hIX),
+
+    choose Js hJs using h,
+    have h_ex_Bs := λ i, (hJs i).1.1,
     choose Bs hBs using h_ex_Bs,
-    obtain ⟨hBsi, hBsJ⟩ := forall_and_distrib.mp hBs,  
-    set J := ⋃ i, sigma.mk i '' (Js i) with Jdef,  
-    set B := ⋃ i, sigma.mk i '' (Bs i) with Bdef,  
-    refine ⟨J, ⟨⟨B, λ i, by simpa using hBsi i, by simpa⟩,_, _⟩, _⟩, 
-    { rintro ⟨i,x⟩ hxJ, 
+    obtain ⟨hBsi, hBsJ⟩ := forall_and_distrib.mp hBs,
+    set J := ⋃ i, sigma.mk i '' (Js i) with Jdef,
+    set B := ⋃ i, sigma.mk i '' (Bs i) with Bdef,
+    refine ⟨J, ⟨⟨B, λ i, by simpa using hBsi i, by simpa⟩,_, _⟩, _⟩,
+    { rintro ⟨i,x⟩ hxJ,
       refine mem_Union_of_mem i (image_subset (sigma.mk i) (hJs i).1.2.1 (by simpa)) },
     { refine Union_subset (λ i, _), rintro x ⟨y, h, rfl⟩, exact (hJs i).1.2.2 h },
-    rintro K ⟨⟨BK, hBK, hKBK⟩, ⟨hIK, hKX⟩⟩ hJK ⟨i,x⟩ hxK, 
-    refine mem_Union_of_mem i ⟨x, (hJs i).2 
-      (⟨⟨sigma.mk i ⁻¹' BK, hBK i, _⟩,preimage_mono hIK,preimage_mono hKX⟩) _ hxK, rfl⟩, 
+    rintro K ⟨⟨BK, hBK, hKBK⟩, ⟨hIK, hKX⟩⟩ hJK ⟨i,x⟩ hxK,
+    refine mem_Union_of_mem i ⟨x, (hJs i).2
+      (⟨⟨sigma.mk i ⁻¹' BK, hBK i, _⟩,preimage_mono hIK,preimage_mono hKX⟩) _ hxK, rfl⟩,
     { exact λ h hy, hKBK hy },
-    convert preimage_mono hJK, 
-    simp only [preimage_mk_Union_image_mk], 
+    convert preimage_mono hJK,
+    simp only [preimage_mk_Union_image_mk],
   end }
 
 @[simp] lemma direct_sum.base_iff {B : set (Σ i, E i)} :
@@ -112,15 +112,15 @@ begin
   exact λ i, (h i).2.2 _ (hJ _) (hIJ _) (hJX _),
 end
 
-@[simp] lemma direct_sum.r_eq [finite ι] (M : ∀ i, matroid (E i)) [∀ i, (M i).finite_rk] 
+@[simp] lemma direct_sum.r_eq [finite ι] (M : ∀ i, matroid (E i)) [∀ i, (M i).finite_rk]
 (X : set (Σ i, E i)) :
   (direct_sum M).r X = ∑ᶠ i, (M i).r (sigma.mk i ⁻¹' X) :=
 begin
   obtain ⟨I, hI⟩ := (direct_sum M).exists_basis X,
-  have hIfin : I.finite, 
+  have hIfin : I.finite,
   { rw ←set.Union_image_preimage_sigma_mk_eq_self I,
     exact finite_Union (λ i, finite.image _ ((direct_sum.indep_iff.mp hI.indep i).finite)) },
-  -- have hfin : ∀ i, (I i).finite := λ i, by {  },  
+  -- have hfin : ∀ i, (I i).finite := λ i, by {  },
   rw [←hI.r, hI.indep.r, sigma.ncard_eq_finsum_ncard_image_preimage_mk _ hIfin],
   rw [direct_sum_basis_iff] at hI,
   congr',
@@ -183,10 +183,10 @@ begin
     simp},
   rintro ⟨i,C₀,hC₀,rfl⟩ ⟨f,hf,rfl⟩ h',
   refine h i C₀ f hC₀ hf _,
-  convert preimage_mono h', 
+  convert preimage_mono h',
   { rw preimage_image_eq _ sigma_mk_injective },
-  rw [← image_eq_image (sigma_mk_injective ), image_insert_eq, image_preimage_eq_inter_range, 
-    image_preimage_eq_inter_range, insert_inter_distrib, insert_eq_of_mem (mem_range_self _)], 
+  rw [← image_eq_image (sigma_mk_injective ), image_insert_eq, image_preimage_eq_inter_range,
+    image_preimage_eq_inter_range, insert_inter_distrib, insert_eq_of_mem (mem_range_self _)],
 end
 
 end direct_sum
@@ -195,43 +195,43 @@ section sum
 
 variables {ι : Type u} {E₁ E₂ : Type v} {M₁ : matroid E₁} {M₂ : matroid E₂}
 
-def sum (M₁ : matroid E₁) (M₂ : matroid E₂) : matroid (E₁ ⊕ E₂) := 
-(direct_sum (λ i, bool.cases_on i M₂ M₁) : 
+def sum (M₁ : matroid E₁) (M₂ : matroid E₂) : matroid (E₁ ⊕ E₂) :=
+(direct_sum (λ i, bool.cases_on i M₂ M₁) :
   matroid (Σ (b : bool), cond b E₁ E₂)).congr (equiv.sum_equiv_sigma_bool E₁ E₂).symm
 
-@[simp] lemma sum.indep_iff {I : set (E₁ ⊕ E₂)} : 
+@[simp] lemma sum.indep_iff {I : set (E₁ ⊕ E₂)} :
   (sum M₁ M₂).indep I ↔ M₁.indep (sum.inl ⁻¹' I) ∧ M₂.indep (sum.inr ⁻¹' I) :=
 begin
-  nth_rewrite 0 ←image_preimage_inl_union_image_preimage_inr I, 
+  nth_rewrite 0 ←image_preimage_inl_union_image_preimage_inr I,
   rw [sum, and_comm],
-  simp only [congr.symm_indep_iff, direct_sum.indep_iff, bool.forall_bool], 
-  convert iff.rfl using 3; 
+  simp only [congr.symm_indep_iff, direct_sum.indep_iff, bool.forall_bool],
+  convert iff.rfl using 3;
   { ext, simp },
-end 
+end
 
-@[simp] lemma sum.base_iff {B : set (E₁ ⊕ E₂)} : 
+@[simp] lemma sum.base_iff {B : set (E₁ ⊕ E₂)} :
   (sum M₁ M₂).base B ↔ M₁.base (sum.inl ⁻¹' B) ∧ M₂.base (sum.inr ⁻¹' B) :=
 begin
-  rw [sum, and_comm], 
-  simp only [congr.symm_base_iff, equiv.sum_equiv_sigma_bool_apply, 
-    direct_sum.base_iff, bool.forall_bool], 
-  convert iff.rfl using 3; 
-  { ext, simp },  
-end 
+  rw [sum, and_comm],
+  simp only [congr.symm_base_iff, equiv.sum_equiv_sigma_bool_apply,
+    direct_sum.base_iff, bool.forall_bool],
+  convert iff.rfl using 3;
+  { ext, simp },
+end
 
-@[simp] lemma sum.circuit_iff {C : set (E₁ ⊕ E₂)} : 
-  (sum M₁ M₂).circuit C ↔ 
+@[simp] lemma sum.circuit_iff {C : set (E₁ ⊕ E₂)} :
+  (sum M₁ M₂).circuit C ↔
     (∃ C₁, M₁.circuit C₁ ∧ C = sum.inl '' C₁) ∨ (∃ C₂, M₂.circuit C₂ ∧ C = sum.inr '' C₂) :=
 begin
-  rw [sum, or_comm], 
-  simp only [congr.symm_circuit_iff, equiv.sum_equiv_sigma_bool_apply, 
-    direct_sum.circuit_iff, bool.exists_bool], 
+  rw [sum, or_comm],
+  simp only [congr.symm_circuit_iff, equiv.sum_equiv_sigma_bool_apply,
+    direct_sum.circuit_iff, bool.exists_bool],
   convert iff.rfl;
-  -- squeeze_simp misbehaves in the line below. 
+  -- squeeze_simp misbehaves in the line below.
   { ext, convert iff.rfl using 2, simp_rw set.ext_iff, simp, tauto },
-end 
+end
 
--- lemma sum.image_inl_union_image_inr_indep_iff {I₁ : set E₁} {I₂ : set E₂} : 
+-- lemma sum.image_inl_union_image_inr_indep_iff {I₁ : set E₁} {I₂ : set E₂} :
 --   (sum M₁ M₂).indep ((sum.inl '' I₁) ∪ (sum.inr '' I₂)) ↔ M₁.indep I₁ ∧ M₂.indep I₂ :=
 -- by simp [preimage_image_eq _ sum.inl_injective, preimage_image_eq _ sum.inr_injective]
 
@@ -291,7 +291,7 @@ end
 lemma partition_one_flat_iff {F : set (Σ i, E i)} :
   (partition_matroid E 1).flat F ↔ ∀ i, (fst ⁻¹' {i} ⊆ F) ∨ (disjoint F (fst ⁻¹' {i})) :=
 begin
-  simp only [partition_matroid, pi.one_apply, direct_sum.flat_iff, unif_on_flat_iff, 
+  simp only [partition_matroid, pi.one_apply, direct_sum.flat_iff, unif_on_flat_iff,
     ncard_preimage_mk, nat.lt_one_iff, ncard_eq_zero],
   refine forall_congr (λ i, _ ),
   convert iff.rfl,
@@ -313,20 +313,20 @@ def partition_matroid_on (f : E → ι) (rks : ι → ℕ) : matroid E :=
 @[simp] lemma partition_matroid_on_indep_iff {I : set E}:
   (partition_matroid_on f rks).indep I ↔ ∀ i, (I ∩ f ⁻¹' {i}).ncard ≤ rks i :=
 begin
-  -- rw [partition_matroid_on], 
+  -- rw [partition_matroid_on],
   simp only [partition_matroid_on, congr.indep_iff, partition_matroid_indep_iff],
   apply forall_congr (λ i, _),
-  rw [←ncard_image_of_injective _ (equiv.sigma_fiber_equiv f).symm.injective, 
-    image_inter ((equiv.sigma_fiber_equiv f).symm.injective)], 
-  convert iff.rfl, 
+  rw [←ncard_image_of_injective _ (equiv.sigma_fiber_equiv f).symm.injective,
+    image_inter ((equiv.sigma_fiber_equiv f).symm.injective)],
+  convert iff.rfl,
   ext x,
   obtain ⟨j, x, rfl⟩ := x,
-  simp only [mem_image, mem_preimage, mem_singleton_iff, equiv.sigma_fiber_equiv, 
-    equiv.coe_fn_symm_mk], 
-  split, 
+  simp only [mem_image, mem_preimage, mem_singleton_iff, equiv.sigma_fiber_equiv,
+    equiv.coe_fn_symm_mk],
+  split,
   { rintro ⟨x', rfl, h⟩, exact h.1.symm },
-  rintro rfl, 
-  exact ⟨x, by simp⟩,  
+  rintro rfl,
+  exact ⟨x, by simp⟩,
 end
 
 @[simp] lemma partition_matroid_on_r_eq (X : set E) :

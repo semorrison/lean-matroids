@@ -1,5 +1,5 @@
-import ..pseudominor
-import ..constructions.direct_sum
+import matroid.pseudominor
+import matroid.constructions.direct_sum
 
 /- Here we prove Edmonds' matroid intersection theorem: given two matroids `M₁` and `M₂` on `α`, the
   largest set that is independent in both matroids has size equal to the min of `M₁.r X + M₂.r Xᶜ`,
@@ -83,7 +83,7 @@ begin
   have hic : (Xc ∩ Xd \ {e})ᶜ = (insert e (Xcᶜ ∪ Xdᶜ)),
   { apply compl_injective,
     simp_rw [←union_singleton, compl_union, compl_compl, diff_eq_compl_inter, inter_comm {e}ᶜ]},
-  
+
   simp_rw [loopify_elem, loopify.r_eq, hic] at hi,
   zify at hIc hId hcon,
 
